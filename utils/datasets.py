@@ -72,7 +72,7 @@ def create_dataloader(path, imgsz, batch_size, stride, opt, hyp=None, augment=Fa
 
 
 class LoadImages:  # for inference
-    def __init__(self, path, img_size=640):
+    def __init__(self, path, img_size=640, rotate=0):
         p = str(Path(path))  # os-agnostic
         p = os.path.abspath(p)  # absolute path
         if '*' in p:
@@ -99,6 +99,17 @@ class LoadImages:  # for inference
             self.cap = None
         assert self.nf > 0, 'No images or videos found in %s. Supported formats are:\nimages: %s\nvideos: %s' % \
                             (p, img_formats, vid_formats)
+
+        if rotate == 0:
+            self.rotate = 0
+        elif rotate == 90:
+            self.rotate = cv2.ROTATE_90_COUNTERCLOCKWISE
+        elif rotate == 180:
+            self.rotate = cv2.ROTATE_180
+        elif rotate == 270:
+            self.rotate = cv2.ROTATE_90_CLOCKWISE
+        elif rotate:
+            raise ValueError('Unsupported rotation angle %d' % rotate)
 
     def __iter__(self):
         self.count = 0
@@ -133,6 +144,10 @@ class LoadImages:  # for inference
             assert img0 is not None, 'Image Not Found ' + path
             print('image %g/%g %s: ' % (self.count, self.nf, path), end='')
 
+        # Rotate
+        if self.rotate:
+            img0 = cv2.rotate(img0, self.rotate)
+
         # Padded resize
         img = letterbox(img0, new_shape=self.img_size)[0]
 
@@ -153,7 +168,7 @@ class LoadImages:  # for inference
 
 
 class LoadWebcam:  # for inference
-    def __init__(self, pipe=0, img_size=640):
+    def __init__(self, pipe=0, img_size=640, rotate=0):
         self.img_size = img_size
 
         if pipe == '0':
@@ -173,6 +188,17 @@ class LoadWebcam:  # for inference
         self.pipe = pipe
         self.cap = cv2.VideoCapture(pipe)  # video capture object
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)  # set buffer size
+
+        if rotate == 0:
+            self.rotate = 0
+        elif rotate == 90:
+            self.rotate = cv2.ROTATE_90_COUNTERCLOCKWISE
+        elif rotate == 180:
+            self.rotate = cv2.ROTATE_180
+        elif rotate == 270:
+            self.rotate = cv2.ROTATE_90_CLOCKWISE
+        elif rotate:
+            raise ValueError('Unsupported rotation angle %d' % rotate)
 
     def __iter__(self):
         self.count = -1
@@ -203,6 +229,10 @@ class LoadWebcam:  # for inference
         assert ret_val, 'Camera Error %s' % self.pipe
         img_path = 'webcam.jpg'
         print('webcam %g: ' % self.count, end='')
+
+        # Rotate
+        if self.rotate:
+            img0 = cv2.rotate(img0, self.rotate)
 
         # Padded resize
         img = letterbox(img0, new_shape=self.img_size)[0]
