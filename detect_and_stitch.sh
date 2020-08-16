@@ -1,7 +1,8 @@
 #!/bin/bash
 
 if [ $# -lt 3 ]; then
-    echo "Convenience script for running YOLO on five dome camera videos."
+    echo "Convenience script for running YOLO on five dome camera videos, by"
+    echo "processing the videos one by one and stitching the results."
     echo "Usage: $0 INPUTDIR OUTPUTVIDEO OUTPUTTEXT [ARGS]"
     echo "  INPUTDIR: Directory with cam_back.mp4, cam_left.mp4, cam_front.mp4, "
     echo "    cam_right.mp4, cam_top.mp4"
