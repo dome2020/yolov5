@@ -22,6 +22,7 @@
 30, skis
 31, snowboard
 32, sports ball
+33, kite
 34, baseball bat
 36, skateboard
 37, surfboard
@@ -33,6 +34,7 @@
 43, knife
 44, spoon
 45, bowl
+47, apple
 55, cake
 61, toilet
 62, tv
